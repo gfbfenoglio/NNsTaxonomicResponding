@@ -1,5 +1,23 @@
 #!/usr/bin/python
 
+# Copyright 2017 Giorgia Fenoglio
+#
+# This file is part of NNsTaxonomicResponding.
+#
+# NNsTaxonomicResponding is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# NNsTaxonomicResponding is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NNsTaxonomicResponding.  If not, see <http://www.gnu.org/licenses/>.
+
+
 from InceptionNet import InceptionPrototipi
 from datetime import datetime
 import glob
@@ -113,12 +131,12 @@ def calcoloAttivazione(classPath,imgsPath,sess,N,jpeg_data_tensor, bottleneck_te
 		filesClass = sorted(imgsPath)
 
 	nfilesClass = len(filesClass)
-  
+
   # activations = matrix of size (number of images X lenght output intrested leve)
 
 	bottValues = np.zeros(shape=(N,2048))
 
-  
+
 	i = 0
 	for p in filesClass:
 		print(str(i)+' -- '+p)
@@ -129,11 +147,11 @@ def calcoloAttivazione(classPath,imgsPath,sess,N,jpeg_data_tensor, bottleneck_te
 		if i>(N-1):
 			break
 
-  
+
   # print the activations on a file
 	printToOneFileCSV(bottValues,filesClass)
-	
-  
+
+
 	return bottValues
 
 def calcoloSoftMax(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
@@ -154,14 +172,14 @@ def calcoloSoftMax(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
   # activations = matrix of size (number of images X lenght output intrested leve)
 	bottValues = np.zeros(shape=(N,nClassi))
 
-  
+
 	i = 0
 
 	scoreElements = np.array([])
 	for p in filesClass:
 		image_data = gfile.FastGFile(p, 'rb').read()
 		predictions = InceptionPrototipi.run_softmax_on_image(sess, image_data)
-		
+
 		#to each image is associated the score of the better class
 		classScore = handlePredictions(predictions,classe)
 		scoreElements = np.append(scoreElements,classScore)
@@ -194,7 +212,7 @@ def handlePredictions(predictions,className):
 
 	top_k = predictions.argsort()[-NUMPRED:][::-1]
 
-	
+
 	scoreToReturn = 0
 	for node_id in top_k:
 		human_string = node_lookup.id_to_string(node_id)
@@ -206,7 +224,7 @@ def handlePredictions(predictions,className):
 
 def extraxtCorrectClassified(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
 
-	""" 
+	"""
 		extract N images form the classPath folder that are correctly classified
 		sess: current session of tensorflow
 		N: number of images to extract
@@ -225,11 +243,11 @@ def extraxtCorrectClassified(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
 	filesClass = sorted(glob.glob(classPath))
 	nfilesClass = len(filesClass)
 	nClassi = softmax_tensor.get_shape()[1]
-  	
+
 	imgList = list()
 
 	node_lookup = NodeLookup()
-	
+
 	scoreElements = np.array([])
 	for p in filesClass:
 		print(p)
@@ -238,7 +256,7 @@ def extraxtCorrectClassified(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
 			image_data = gfile.FastGFile(p, 'rb').read()
 			#activation of the last level
 			predictions = InceptionPrototipi.run_softmax_on_image(sess, image_data)
-			
+
 			#more activated neuron
 			top_prediction = predictions.argsort()[-1:][::-1]
 			print(top_prediction)
@@ -255,13 +273,13 @@ def extraxtCorrectClassified(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
 	return imgList
 
 # def varianza(vectors, prototipo):
-#   """ 
+#   """
 	#extraction of the variance of the vectors from the prototype prototipo
 # 	"""
 #   varianza = np.zeros(shape=(1,2048))
 
 #   N = vectors.shape[0]
-  
+
 
 #   for p in vectors:
 #     for i in range(0,2048):
@@ -269,31 +287,31 @@ def extraxtCorrectClassified(classPath,sess,N,jpeg_data_tensor, softmax_tensor):
 
 #   for i in range(0,2048):
 #     varianza[0][i] = varianza[0][i]/N
-  
+
 #   varianza = np.mean(varianza, axis=1)
 
 #   return varianza
 
 def printToOneFileCSV(activations,files):
-	""" 
+	"""
 		#print of the activations on a single csv file
 	"""
 	# number of element to print
 	N = activations.shape[0]
 	today = datetime.date.today()
-  
+
   # creation of the folder
 	if not os.path.exists('./csv'):
 		os.makedirs('./csv')
 
 	fOutput = './csv/attivazioni10classiTESTSET'+str(today)+'.csv'
-	
+
 	new = False
 	if not os.path.exists(fOutput):
 		new = True
 
 	f = open(fOutput,'a')
-  
+
   # print of the attributes
   	if new:
 		f.write('name,')
@@ -317,16 +335,16 @@ def printToOneFileCSV(activations,files):
 def printToFileCSV(activations,c,files):
 	""" #print of the activations on a csv file
 	"""
-	
+
 	N = activations.shape[0]
 	today = datetime.date.today()
-  
+
   # creation of the folder
 	if not os.path.exists('./csv'):
 		os.makedirs('./csv')
 
 	fOutput = './csv/attivazioni'+c+str(today)+'.csv'
-  
+
   # print in csv of the attributes
 	f = open(fOutput,'w')
 	f.write('name,')
@@ -371,14 +389,14 @@ def handleWeights(softmax_weight):
 		get the weights to the last level and calculate some statistics
 	"""
 	(r,c) = softmax_weight.get_shape()
-	
+
 	with tf.Session():
 		weight = softmax_weight.eval()
 
 		#max and minimum
 		maxW = np.amax(weight, axis=0)
 		minW = np.amin(weight, axis=0)
-		
+
 		#mean and variance
 		meanW = np.mean(weight, axis=0)
 		varW = np.var(weight, axis=0)
@@ -392,7 +410,7 @@ def handleWeights(softmax_weight):
 		percSoglia = 10
 		sogliaWmax = np.subtract(maxW,((np.subtract(maxW, minW)) * percSoglia / 100))
 		sogliaWmin = np.add(minW,((np.subtract(maxW, minW)) * percSoglia / 100))
-		
+
 		#print(sogliaWmin)
 		#print(sogliaWmax)
 
@@ -401,7 +419,7 @@ def handleWeights(softmax_weight):
 			for i in range(0,c):
 				if (r[i] < sogliaWmax[i]) and (r[i] > sogliaWmin[i]):
 					r[i] = 0
-		
+
 		#count of the remaining values
 		countRemain = [0, 0, 0, 0]
 		indexRemain = [[],[],[],[]]
@@ -433,7 +451,7 @@ def handleWeights(softmax_weight):
 def getAllInputClass(className,fileInput):
 	f = open(fileInput,'r')
 	inputC = []
-	for l in f:		
+	for l in f:
 		lSplit = l.split(',')
 		if className in lSplit[0]:
 			print (lSplit[0])
@@ -450,7 +468,7 @@ def getAllInputClass(className,fileInput):
 # 		classes.append(l[:-1])
 
 # 	fInputsName = './csv/attivazioni10classi2016-10-10.csv'
-	
+
 # 	fOutputName = './csv/varianze.csv'
 # 	fOutput = open(fOutputName,'a')
 # 	fOutput.write('classe,')
@@ -464,7 +482,7 @@ def getAllInputClass(className,fileInput):
 # 	for c in classes:
 # 		print('--- da classe '+c)
 # 		prototipo = np.mean(exClasses[c], axis=0)
-# 		fOutput.write(c+',')  		
+# 		fOutput.write(c+',')
 #   		for c2 in classes:
 #   			print(' a '+c2)
 #   			v = varianza(exClasses[c2], prototipo)
@@ -473,10 +491,10 @@ def getAllInputClass(className,fileInput):
 
 
 if __name__ == '__main__':
-	
+
 	# # initialization of the model
    [graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor,sess, softmax_weight, softmax_tensor] = InceptionPrototipi.main('_')
-  
+
    folderPaths = 'FOLDER WITH THE IMAGES'
 
    classPaths = []
@@ -490,17 +508,11 @@ if __name__ == '__main__':
    for cat in classPaths:
    	print('CLASS '+cat)
 	firstClassPath = folderPaths + cat +'/*.JPEG'
-	
+
 	#number of images for each class
-	N = 100 
+	N = 100
 	print('Extraction images correctly classified '+cat)
 	imgsToEval = extraxtCorrectClassified(firstClassPath,sess,N,jpeg_data_tensor, softmax_tensor)
 	print(imgsToEval)
 	print('Calculation activations in class '+cat)
 	bottValues1 = calcoloAttivazione(firstClassPath, imgsToEval,sess,N,jpeg_data_tensor, bottleneck_tensor)
-
- 
-
-
-
-

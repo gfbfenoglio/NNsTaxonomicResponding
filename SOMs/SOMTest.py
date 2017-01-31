@@ -1,8 +1,24 @@
+# Copyright 2017 Giorgia Fenoglio
+#
+# This file is part of NNsTaxonomicResponding.
+#
+# NNsTaxonomicResponding is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# NNsTaxonomicResponding is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NNsTaxonomicResponding.  If not, see <http://www.gnu.org/licenses/>.
 
 from matplotlib import pyplot as plt
-import numpy as np 
+import numpy as np
 from colour import Color
-from SOM import SOM 
+from SOM import SOM
 import os
 import math
 import random
@@ -17,7 +33,7 @@ def printToFileCSV(prototipi,file):
     print of the prototypes in file.csv
     prototipi: dictionary of the prototypes to print
   """
-  
+
   f = open(file,'w')
 
   # stampa su file
@@ -57,7 +73,7 @@ def showSom(som,inputs,nameInputs,count,title):
   lenExample = len(inputs[0])
   print(lenExample)
 
-  print(inputClass+' -- '+classColor[iColor])  
+  print(inputClass+' -- '+classColor[iColor])
 
   for i, m in enumerate(mapped):
     if nameInputs[i] != inputClass:
@@ -65,7 +81,7 @@ def showSom(som,inputs,nameInputs,count,title):
       iColor = iColor + 1
       print(inputClass+' -- '+classColor[iColor])
 
-      
+
     plt.text(m[1], m[0], str('____'), ha='center', va='center', color=classColor[iColor], alpha=0.5,
           bbox=dict(facecolor=classColor[iColor], alpha=0.6, lw=0, boxstyle='round4'))
 
@@ -80,11 +96,11 @@ def showSom(som,inputs,nameInputs,count,title):
 
 
 def classPrototype(inputs,nameInputs):
-  #build the prototypes of the different classes 
+  #build the prototypes of the different classes
   protClass = dict()
   nameS = list(set(nameInputs))
   temp = np.array(inputs)
-  
+
   i = 0
   for name in nameS:
     protClass[name] = np.mean(temp[i:i+NumXClass][:],axis=0)
@@ -118,7 +134,7 @@ if __name__ == '__main__':
   loaded = som.restore_trained()
   if not loaded:
     som.train(inputs)
-   
+
   for k in range(len(nameInputs)):
     nameInputs[k] = nameInputs[k].split('_')[0]
 

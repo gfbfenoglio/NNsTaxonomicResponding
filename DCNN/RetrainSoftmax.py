@@ -1,16 +1,38 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 Giorgia Fenoglio
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# This file is part of NNsTaxonomicResponding.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# NNsTaxonomicResponding is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# NNsTaxonomicResponding is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NNsTaxonomicResponding.  If not, see <http://www.gnu.org/licenses/>.
+#
+# ---------------
+# This file is a derived work originally distributed from the TensorFlow Authors
+# under the Apache Licence, Version 2.0. This file is thereby also available under
+# the original licence. Here it follows the original copyright notice:
+#
+#   Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 # ==============================================================================
 """Simple transfer learning with an Inception v3 architecture model.
 
@@ -299,7 +321,7 @@ def create_inception_graph():
               BOTTLENECK_TENSOR_NAME, JPEG_DATA_TENSOR_NAME,
               RESIZED_INPUT_TENSOR_NAME]))
 
-  
+
   return sess.graph, bottleneck_tensor, jpeg_data_tensor, resized_input_tensor
 
 
@@ -721,10 +743,10 @@ def main(_):
   image_lists = create_image_lists(FLAGS.image_dir, FLAGS.testing_percentage,
                                    FLAGS.validation_percentage)
   print(image_lists['n03642806'].keys())
-  
+
   graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (
       create_inception_graph())
-  
+
   tf.histogram_summary('bttProva/primoHist',bottleneck_tensor,tf.GraphKeys.SUMMARIES)
 
   tf.merge_all_summaries(tf.GraphKeys.SUMMARIES)
@@ -852,4 +874,3 @@ def main(_):
 if __name__ == '__main__':
 
   tf.app.run()
-

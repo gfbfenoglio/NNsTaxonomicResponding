@@ -1,3 +1,20 @@
+# Copyright 2017 Giorgia Fenoglio
+#
+# This file is part of NNsTaxonomicResponding.
+#
+# NNsTaxonomicResponding is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# NNsTaxonomicResponding is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NNsTaxonomicResponding.  If not, see <http://www.gnu.org/licenses/>.
+
 from scipy.cluster.vq import kmeans2
 from scipy import stats
 import numpy as np
@@ -48,14 +65,14 @@ def Kmeanscluster():
 	[inputs,nameInputs] = getAllInputs(fIn,lenEx)
 	print('calcolo kmeans')
 	[centroid,labels] = kmeans2(inputs,classi,iter=200,minit='random')
-	
+
 	for i in range(classi):
 		print('-------------------------------------------')
 		print('classe '+nameInputs[ninput*i])
 		cLabels = labels[ninput*i:ninput*(i+1)]
 
 		print(cLabels)
-		
+
 		mode = int(stats.mode(cLabels)[0][0])
 		print('main class:'+str(mode))
 		errors = len(cLabels)-(cLabels.tolist()).count(mode)
@@ -70,10 +87,10 @@ def printPredictions(prediction,nameInputs):
 		cLabels = prediction[ninput*i:ninput*(i+1)]
 
 		print(cLabels)
-		
+
 		mode.append(int(stats.mode(cLabels)[0][0]))
 		print('\tmain class:'+str(mode[-1]))
-		
+
 		errors.append(len(cLabels)-(cLabels.tolist()).count(mode[-1]))
 		print('errori: '+str(errors[-1])+'/'+str(len(cLabels)))
 
@@ -105,7 +122,7 @@ def printPredictionsK(prediction,nameInputs):
 		#mode.append(stats.mode(cLabels)[0][0])
 
 		print('\tmain class:'+str(mode[-1]))
-		
+
 		errors.append(len(cLabels)-(cLabels.tolist()).count(mode[-1]))
 		print('errori: '+str(errors[-1])+'/'+str(len(cLabels)))
 
@@ -191,7 +208,7 @@ def viewClusters(data,nameInputs):
 
 	# Obtain labels for each point in mesh. Use last trained model.
 	Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
-	
+
 
 	# Put the result into a color plot
 	Z = Z.reshape(xx.shape)
@@ -223,7 +240,7 @@ def KmeansSKLearn():
 	print('calcolo kmeans')
 	km = KMeans(n_clusters = classi,max_iter=100,n_init=50,algorithm='elkan',verbose=1)
 	km.fit(inputs)
-	
+
 	#find which cluster each customer is in
 	prediction = km.predict(inputs)
 	findClassesInClusters(prediction,nameInputs)
@@ -235,10 +252,10 @@ def MiniBatchSKLearn():
 	[inputs,nameInputs] = getAllInputs(fIn,lenEx)
 	print('calcolo minibatch')
 	db = MiniBatchKMeans(n_clusters=10, init='k-means++', max_iter=100, batch_size=20, verbose=1)
-	
+
 	#find which cluster each customer is in
 	prediction = db.fit_predict(inputs)
-	
+
 	findClassesInClusters(prediction,nameInputs)
 	printPredictionsK(prediction,nameInputs)
 	distanceIntraCluster(prediction,inputs,nameInputs)
@@ -249,13 +266,13 @@ def AffinityPropagationSKLearn():
 	print('calcolo affinityPropagation')
 	km = AffinityPropagation(damping=0.5,verbose=1)
 	#km.fit(inputs)
-	
+
 	#find which cluster each customer is in
 	prediction = km.fit_predict(inputs)
 	findClassesInClusters(prediction,nameInputs)
 	#printPredictionsK(prediction,nameInputs)
 	distanceIntraCluster(prediction,inputs,nameInputs)
-	
+
 
 def AgglomerativeSKLearn():
 	print('lettura inputs da '+fIn)
@@ -263,13 +280,13 @@ def AgglomerativeSKLearn():
 	print('calcolo agglomerative clustering')
 	ac = AgglomerativeClustering(n_clusters = classi,compute_full_tree=True)
 	ac.fit(inputs)
-	
+
 	prediction = ac.fit_predict(inputs)
 	findClassesInClusters(prediction,nameInputs)
 	printPredictionsK(prediction,nameInputs)
 	distanceIntraCluster(prediction,inputs,nameInputs)
 
-	
+
 
 if __name__ == '__main__':
 	AgglomerativeSKLearn()
